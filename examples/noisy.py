@@ -53,7 +53,7 @@ if __name__ == "__main__":
     llp.LLaMAConfig.set_model_path(input("Path to GGML LLaMA model weights: "))
     model = NoisyModel("Hello, how art you going today?")
     # Run SMC
-    for i,p in enumerate(llp.smc_steer(model, 5, 15), verbose=False):
+    for i,p in enumerate(llp.smc_steer(model, 5, 15, verbose=False)):
         print(f"Particle {i}: {p} (weight {p.weight})")
 else:
     llp.LLaMAConfig.set_model_path(llp.WEIGHTS_PATH)

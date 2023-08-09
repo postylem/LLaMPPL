@@ -9,3 +9,4 @@ from .constants import *
 from .distributions.transformer import *
 from .distributions.tokendist import *
 from .distributions.geometric import *
+from .distributions.categorical import *

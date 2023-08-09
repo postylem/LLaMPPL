@@ -53,18 +53,27 @@ def resample_optimal(weights, N):
     return deterministic, stoch_resampled, c
 
 
-def smc_steer(model, n_particles, n_beam):
+def smc_steer(model, n_particles, n_beam, verbose=True):
     # Create n_particles copies of the model
     particles = [copy.deepcopy(model) for _ in range(n_particles)]
 
     for particle in particles:
         particle.start()
 
-    for particle in particles:
-        for _ in range(n_beam):
-            print("\n")
+    # for particle in particles:
+    #     for _ in range(n_beam):
+    #         print("\n")
+    step_num = 0
+
+
+    def vprint(s):
+        if verbose:
+            print(s)
 
     while any(map(lambda p: not p.done_stepping(), particles)):
+        print(f"\n==={step_num = }")
+        step_num += 1
+
         # Count the number of finished particles
         n_finished = sum(map(lambda p: p.done_stepping(), particles))
         n_total = n_finished + (n_particles - n_finished) * n_beam
@@ -84,9 +93,10 @@ def smc_steer(model, n_particles, n_beam):
             # Step
             if not p.done_stepping():
                 p.step()
-            print(f"Particle {i}: {p} (weight {p.weight})")
+            vprint(f"-\tSuper-particle {i}: {p} (weight {p.weight})")
         
         # Use optimal resampling to resample
+        vprint("Resampling")
         W = np.array([p.weight for p in super_particles])
         W_tot = logsumexp(W)
         W_normalized = softmax(W)
@@ -98,6 +108,8 @@ def smc_steer(model, n_particles, n_beam):
         # For stochastic particles: w = 1/c * total       sum(stoch weights) / num_stoch = sum(stoch weights / total) / num_stoch * total * N/M
         for i in stoch_indices:
             super_particles[i].weight = W_tot - np.log(c) + np.log(n_particles) - np.log(n_total)
-
+        
+        for i, p in enumerate(particles):
+            print(f"Particle {i}: {p} (weight {p.weight})")
     # Return the particles
     return particles
