@@ -1,3 +1,17 @@
+```bash
+# Installation:
+conda create -n TEST python=3
+conda activate TEST
+# cloned repo (with submodules)
+git clone --recurse-submodules git@github.com:probcomp/LLaMPPL.git
+cd LLaMPPL
+pip install scikit-build
+python setup.py develop
+```
+
+then be sure to have converted, quantized weights at location WEIGHTS_PATH (in llamppl/constants.py).
+
+
 # LLaMPPL: A Large Language Model Probabilistic Programming Language
 
 LLaMPPL is a research prototype for _language model probabilistic programming_:
