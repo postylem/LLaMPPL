@@ -51,11 +51,12 @@ class ConstraintModel(llp.Model):
         q_logprobs = llp.lognormalize(logits + mask)
         return llp.TokenCategorical(q_logprobs)
 
-# Create the model
-llp.LLaMAConfig.set_model_path(input("Path to GGML LLaMA model weights: "))
-prompt = " The Fed says"
-model = ConstraintModel(prompt, can_follow)
-for i, p in enumerate(llp.smc_steer(model, 8, 3)):
-    print(f"Particle {i}: {p} (weight {p.weight})")
-
-
+if __name__ == "__main__":
+    # Create the model
+    llp.LLaMAConfig.set_model_path(input("Path to GGML LLaMA model weights: "))
+    prompt = " The Fed says"
+    model = ConstraintModel(prompt, can_follow)
+    for i, p in enumerate(llp.smc_steer(model, 8, 3)):
+        print(f"Particle {i}: {p} (weight {p.weight})")
+else:
+    llp.LLaMAConfig.set_model_path(llp.WEIGHTS_PATH)
