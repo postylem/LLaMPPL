@@ -102,6 +102,11 @@ def smc_steer(model, n_particles, n_beam, verbose=True):
         W_normalized = softmax(W)
         det_indices, stoch_indices, c = resample_optimal(W_normalized, n_particles)
         particles = [super_particles[i] for i in np.concatenate((det_indices, stoch_indices))]
+        
+        # Get the weights to print before reweighting
+        msgs = [f"Particle {i}: {p}\t(weight {p.weight:.4f})"
+               for i, p in enumerate(particles)]
+
         # For deterministic particles: w = w * N/N'
         for i in det_indices:
             super_particles[i].weight += np.log(n_particles) - np.log(n_total)
@@ -109,7 +114,8 @@ def smc_steer(model, n_particles, n_beam, verbose=True):
         for i in stoch_indices:
             super_particles[i].weight = W_tot - np.log(c) + np.log(n_particles) - np.log(n_total)
         
+        # Print the weights before and after reweighting
         for i, p in enumerate(particles):
-            print(f"Particle {i}: {p} (weight {p.weight})")
+            print(msgs[i]+f"\t (after reweighting {p.weight:.4f})")
     # Return the particles
     return particles
