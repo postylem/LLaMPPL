@@ -1,16 +1,29 @@
 ```bash
-# Installation:
-conda create -n TEST python=3
+# Installation (requires scikit-build, so make conda env):
+conda create -n TEST python=3 scikit-build
 conda activate TEST
-# cloned repo (with submodules)
-git clone --recurse-submodules git@github.com:probcomp/LLaMPPL.git
+# cloned repo (must also include submodule)
+git clone --recurse-submodules git@github.com:postylem/LLaMPPL.git
 cd LLaMPPL
-pip install scikit-build
 python setup.py develop
 ```
 
-then be sure to have converted, quantized weights at location WEIGHTS_PATH (in llamppl/constants.py).
+- Assure that `WEIGHTS_PATH` (in `llamppl/constants.py`) points to the location of GGML-format, quantized, LLaMA weights (made following instructions [here](https://github.com/alex-lew/llama.cpp/tree/068a0a9c36f4c3a6e8ec58de569e93d47d5b85a1#prepare-data--run)).
 
+- Run `python examples/{example}.py`, for one of the examples (`constraints.py`, `infilling.py`, or `prompt_intersection.py`) to
+test the installation.
+
+In ipython:
+```python
+%load_ext autoreload
+%autoreload all -p
+from examples.constraints import *
+particles = llp.smc_steer(
+    NoisyModel(""," Hello. how art you going today.", is_similar_levenshtein(1)), 
+    5, 15, verbose=False)
+```
+
+----------------
 
 # LLaMPPL: A Large Language Model Probabilistic Programming Language
 

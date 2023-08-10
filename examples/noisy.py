@@ -1,27 +1,31 @@
 import llamppl as llp
 import numpy as np
+import re
 from Levenshtein import distance as lev
 
-def is_similar_levenshtein(token, s, threshold=1):
+def is_similar_levenshtein(threshold=1):
     """Whether Levenshtein distance is (at or) below threshold"""
-    if isinstance(token, llp.Token):
-        token = str(token)
-    if isinstance(s, llp.Token):
-        s = str(s)
-    if s != '' and s[0] != token[0]:
-        return False
-    if lev(token, s) <= threshold:
-        return True
-    else:
-        return False
+    def f(token, s):
+        if isinstance(token, llp.Token):
+            token = str(token)
+        if isinstance(s, llp.Token):
+            s = str(s)
+        # if s != '' and s[0] != token[0]:
+            # return False
+        if lev(token, s) <= threshold:
+            return True
+        else:
+            return False
+    return f
 
-class NoisyModel(llp.Model):
-    def __init__(self, string):
+
+class NoisyTokenModel(llp.Model):
+    def __init__(self, prompt, string, is_similar=is_similar_levenshtein(1)):
         super().__init__()
-
+        self.s = prompt
         self.ctx = self.new_context(self.s)
         self.remaining_tokens = self.llama.tokenize(string)
-        self.is_similar = is_similar_levenshtein
+        self.is_similar = is_similar
 
     def step(self):
         true_token = self.remaining_tokens.pop(0)
@@ -37,21 +41,18 @@ class NoisyModel(llp.Model):
             self.observe(llp.Transformer(self.ctx), llp.EOS)
             self.finish()
 
-    def proposal(self, current_token):
+    def proposal(self, true_token):
         lm_logits = self.ctx.logits()
-        lev_similarity_mask = np.array([
-            0.0 if self.is_similar(current_token, v) else -np.inf
+        mask = np.array([
+            0.0 if self.is_similar(true_token, v) else -np.inf
             for v in self.vocab()])
-        reweighted_logits = sum(
-            [lm_logits, lev_similarity_mask]
-        )
-        q_logprobs = llp.lognormalize(reweighted_logits)
-        return llp.TokenCategorical(q_logprobs)
+        logprobs = llp.lognormalize(lm_logits + mask)
+        return llp.TokenCategorical(logprobs)
 
 if __name__ == "__main__":
     # Create the model
     llp.LLaMAConfig.set_model_path(input("Path to GGML LLaMA model weights: "))
-    model = NoisyModel("Hello, how art you going today?")
+    model = NoisyTokenModel("", "ello, how art yo going today?")
     # Run SMC
     for i,p in enumerate(llp.smc_steer(model, 5, 15, verbose=False)):
         print(f"Particle {i}: {p} (weight {p.weight})")
