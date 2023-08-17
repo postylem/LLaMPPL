@@ -20,8 +20,7 @@ def smc_standard(model, n_particles, ess_threshold=0.5):
         W = np.array([p.weight for p in particles])
         w_sum = logsumexp(W)
         normalized_weights = W - w_sum
-        
-        endmsg = "└╼"
+
         # Resample if necessary
         if -logsumexp(normalized_weights * 2) < np.log(ess_threshold) + np.log(n_particles):
             # Alternative implementation uses a multinomial distribution and only makes n-1 copies, reusing existing one, but fine for now
@@ -30,7 +29,8 @@ def smc_standard(model, n_particles, ess_threshold=0.5):
             avg_weight = w_sum - np.log(n_particles)
             for p in particles:
                 p.weight = avg_weight
-            endmsg+=f"   (weights each = {avg_weight:.4f} after resampling)"
-        print(endmsg)
+            print(f"└╼   (weights each = {avg_weight:.4f} after resampling)")
+        else:
+            print("└╼")
     # Return the particles
     return particles
