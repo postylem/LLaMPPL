@@ -71,7 +71,7 @@ def smc_steer(model, n_particles, n_beam, verbose=True):
             print(s)
 
     while any(map(lambda p: not p.done_stepping(), particles)):
-        print(f"\n==={step_num = }")
+        print(f"┌╼ {step_num = }")
         step_num += 1
 
         # Count the number of finished particles
@@ -93,10 +93,9 @@ def smc_steer(model, n_particles, n_beam, verbose=True):
             # Step
             if not p.done_stepping():
                 p.step()
-            vprint(f"-\tSuper-particle {i}: {p} (weight {p.weight})")
+            vprint(f"│\tSuper-particle {i} (weight {p.weight:.4f}):\t{p}")
         
         # Use optimal resampling to resample
-        vprint("Resampling")
         W = np.array([p.weight for p in super_particles])
         W_tot = logsumexp(W)
         W_normalized = softmax(W)
@@ -104,8 +103,7 @@ def smc_steer(model, n_particles, n_beam, verbose=True):
         particles = [super_particles[i] for i in np.concatenate((det_indices, stoch_indices))]
         
         # Get the weights to print before reweighting
-        msgs = [f"Particle {i}: {p}\t(weight {p.weight:.4f})"
-               for i, p in enumerate(particles)]
+        msgs = [f"├ Particle {i} (weight {p.weight:.4f}" for i, p in enumerate(particles)]
 
         # For deterministic particles: w = w * N/N'
         for i in det_indices:
@@ -116,6 +114,7 @@ def smc_steer(model, n_particles, n_beam, verbose=True):
         
         # Print the weights before and after reweighting
         for i, p in enumerate(particles):
-            print(msgs[i]+f"\t (after reweighting {p.weight:.4f})")
+            print(msgs[i]+f", reweighted {p.weight:.4f}):\t{p}")
+        print("└╼")
     # Return the particles
     return particles
