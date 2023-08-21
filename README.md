@@ -17,9 +17,9 @@ In ipython:
 ```python
 %load_ext autoreload
 %autoreload all -p
-from examples.constraints import *
+from examples.noisy import *
 particles = llp.smc_steer(
-    NoisyModel(""," Hello. how art you going today.", is_similar_levenshtein(1)), 
+    NoisyTokenModel(""," Hello. how art you going today.", is_similar_levenshtein(1)), 
     5, 15, verbose=False)
 ```
 
