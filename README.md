@@ -13,6 +13,8 @@ python setup.py develop
 - Run `python examples/{example}.py`, for one of the examples (`constraints.py`, `infilling.py`, or `prompt_intersection.py`) to
 test the installation.
 
+- If not installed already, may need to install gcc (channel conda-forge seems to work, anaconda doesn't?): `conda install -c conda-forge gcc`
+
 In ipython:
 ```python
 %load_ext autoreload
