@@ -8,12 +8,12 @@ cd LLaMPPL
 python setup.py develop
 ```
 
+- If not installed already, may need to install gcc (channel conda-forge seems to work, anaconda doesn't?): `conda install -c conda-forge gcc`
+
 - Assure that `WEIGHTS_PATH` (in `llamppl/constants.py`) points to the location of GGML-format, quantized, LLaMA weights (made following instructions [here](https://github.com/alex-lew/llama.cpp/tree/068a0a9c36f4c3a6e8ec58de569e93d47d5b85a1#prepare-data--run)).
 
 - Run `python examples/{example}.py`, for one of the examples (`constraints.py`, `infilling.py`, or `prompt_intersection.py`) to
 test the installation.
-
-- If not installed already, may need to install gcc (channel conda-forge seems to work, anaconda doesn't?): `conda install -c conda-forge gcc`
 
 In ipython:
 ```python
