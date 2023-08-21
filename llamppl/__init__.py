@@ -10,3 +10,4 @@ from .distributions.transformer import *
 from .distributions.tokendist import *
 from .distributions.geometric import *
 from .distributions.categorical import *
+from .distributions.uniformdiscrete import *
