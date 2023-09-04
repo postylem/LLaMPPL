@@ -25,7 +25,11 @@ def is_similar_levenshtein(threshold=1):
 
 
 def split_before_whitespace(string):
-    "Split if there's a nonwhitespace char behind and whitespace char ahead"
+    """
+    Simple whitespace-preserving word-tokenizer: splits string every location
+    that follows a non-whitespace char and precedes a whitespace char.
+    E.g.: 'Here, an example.' -> ['Here,', ' an', ' example.']
+    """
     return re.split(r"(?<=\S)(?=\s)", string)
 
 
